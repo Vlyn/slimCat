@@ -222,11 +222,11 @@ namespace slimCat.Services
         {
             var time = DateTimeOffset.Now.Date;
 
-            var month = time.Month;
             var year = time.Year;
-            var day = time.Day;
+            var month = time.Month.ToString("00");
+            var day = time.Day.ToString("00");
 
-            return year + "-" + month + "-" + day + ".txt";
+            return $"{year}-{month}-{day}.txt";
         }
 
         private StreamWriter AccessLog(string title, string id)

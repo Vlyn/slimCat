@@ -292,7 +292,7 @@
                                                         Source="{Binding CurrentImage.FullImageUri,
                                                            Converter={StaticResource CacheUriForeverConverter}, IsAsync=True}"
                                                         Margin="5"
-                                                        RenderOptions.BitmapScalingMode="Fant"
+                                                        RenderOptions.BitmapScalingMode="LowQuality"
                                                         MinWidth="300"
                                                         HorizontalAlignment="Center" />
                                                 </ControlTemplate>
@@ -480,7 +480,7 @@
                                     <Image
                                         Source="{Binding CurrentImage.FullImageUri,
                                                     Converter={StaticResource CacheUriForeverConverter}, IsAsync=True}"
-                                        RenderOptions.BitmapScalingMode="Fant"
+                                        RenderOptions.BitmapScalingMode="LowQuality"
                                         Stretch="Uniform"
                                         StretchDirection="Both"
                                         VerticalAlignment="Center"

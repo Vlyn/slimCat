@@ -31,6 +31,7 @@ namespace slimCat.Services
     using ViewModels;
     using static Utilities.Constants.ServerCommands;
     using static Utilities.Constants.Arguments;
+    using System.Collections.Concurrent;
 
     #endregion
 
@@ -94,8 +95,6 @@ namespace slimCat.Services
 
         private readonly IFriendRequestService friendRequestService;
 
-        private readonly object queueLocker = new object();
-
         private readonly object chatStateLocker = new object();
 
         private readonly IManageChannels channels;
@@ -104,7 +103,7 @@ namespace slimCat.Services
 
         private readonly IManageNotes notes;
 
-        private readonly Queue<IDictionary<string, object>> que = new Queue<IDictionary<string, object>>();
+        private readonly ConcurrentQueue<IDictionary<string, object>> queue = new ConcurrentQueue<IDictionary<string, object>>();
 
         private IList<string> rejoinChannelList = new List<string>();
 
@@ -126,13 +125,13 @@ namespace slimCat.Services
 
         private void DoAction()
         {
-            lock (queueLocker)
+            if (queue.Count <= 0)
+                return;
+
+            var success = queue.TryDequeue(out var workingData);
+
+            if (success)
             {
-                if (que.Count <= 0)
-                    return;
-
-                var workingData = que.Dequeue();
-
                 Invoke(workingData);
                 DoAction();
             }
@@ -161,10 +160,8 @@ namespace slimCat.Services
                 }
             }
 
-            lock (queueLocker)
-            {
-                que.Enqueue(data);
-            }
+            queue.Enqueue(data);
+
             DoAction();
         }
 

@@ -68,7 +68,6 @@ namespace slimCat.Utilities
                 RegisterSingleton<IFriendRequestService, FriendRequestService>();
                 RegisterSingleton<IGetProfiles, ProfileService>();
                 RegisterSingleton<IChatState, ChatState>();
-                RegisterSingleton<IUpdateMyself, UpdateService>();
 
                 Register<Application, Application>(Application.Current);
                 var host = Container.Resolve<IAccount>().ServerHost;

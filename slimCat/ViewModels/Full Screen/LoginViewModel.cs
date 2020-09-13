@@ -44,18 +44,14 @@ namespace slimCat.ViewModels
 
         #endregion
 
-        private readonly IUpdateMyself updateService;
-
         #region Constructors and Destructors
 
-        public LoginViewModel(IChatState chatState, IUpdateMyself updateService)
+        public LoginViewModel(IChatState chatState)
             : base(chatState)
         {
             try
             {
                 model = chatState.Account;
-                this.updateService = updateService;
-                CheckForUpdates();
                 Container.RegisterType<object, LoginView>(LoginViewName);
 
                 LoggingSection = "login vm";
@@ -227,34 +223,6 @@ namespace slimCat.ViewModels
 
                 RelayMessage = Constants.FriendlyName;
             }
-        }
-
-        private async void CheckForUpdates()
-        {
-            var latest = await updateService.GetLatestAsync();
-            if (latest == null) return;
-
-            await Dispatcher.BeginInvoke((Action) delegate
-            {
-                HasNewUpdate = latest.IsNewUpdate;
-
-                UpdateName = latest.ClientName;
-                UpdateLink = latest.DownloadLink;
-                ApplicationSettings.SlimCatChannelId = latest.SlimCatChannelId;
-
-                OnPropertyChanged("HasNewUpdate");
-                OnPropertyChanged("UpdateName");
-                OnPropertyChanged("UpdateLink");
-            });
-
-            var updated = await updateService.TryUpdateAsync();
-            await Dispatcher.BeginInvoke((Action) delegate
-            {
-                UpdateFailed = !updated;
-                UpdateCompleted = true;
-                OnPropertyChanged("UpdateFailed");
-                OnPropertyChanged("UpdateCompleted");
-            });
         }
 
         #endregion

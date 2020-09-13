@@ -265,7 +265,6 @@
     <Compile Include="Models\ProfileData.cs" />
     <Compile Include="Models\ProfileImage.cs" />
     <Compile Include="Models\ProfileKink.cs" />
-    <Compile Include="Services\Interfaces\IUpdateMyself.cs" />
     <Compile Include="Models\LatestConfig.cs" />
     <Compile Include="Services\ProfileService.cs" />
     <Compile Include="Services\NoteService.cs" />
@@ -276,7 +275,6 @@
     <Compile Include="Services\Enums\SpecialLogMessageKind.cs" />
     <Compile Include="Services\TicketService.cs" />
     <Compile Include="Services\ToastService.cs" />
-    <Compile Include="Services\UpdateService.cs" />
     <Compile Include="Services\UserPreferences.cs" />
     <Compile Include="Theme\EmbeddedTheme.xaml.cs" />
     <Compile Include="Utilities\Converters\AutoOrStarConverter.cs" />

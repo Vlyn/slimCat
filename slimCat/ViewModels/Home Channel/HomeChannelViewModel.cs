@@ -42,12 +42,10 @@ namespace slimCat.ViewModels
     /// </summary>
     public class HomeChannelViewModel : ChannelViewModelBase, IHasTabs
     {
-        private readonly IUpdateMyself updateService;
-
         #region Constructors and Destructors
 
         public HomeChannelViewModel(string name, IChatState chatState, IAutomateThings automation, IBrowseThings browser,
-            HomeSettingsViewModel settingsVm, HomeHelpViewModel helpVm, IUpdateMyself updateService)
+            HomeSettingsViewModel settingsVm, HomeHelpViewModel helpVm)
             : base(chatState)
         {
             try
@@ -57,7 +55,6 @@ namespace slimCat.ViewModels
                 flavorText = new StringBuilder("Connecting");
                 connectDotDot = new StringBuilder();
 
-                this.updateService = updateService;
                 HelpVm = helpVm;
 
                 Container.RegisterType<object, HomeChannelView>(Model.Id, new InjectionConstructor(this));
@@ -282,9 +279,6 @@ namespace slimCat.ViewModels
             OnPropertyChanged("RecentChannels");
             OnPropertyChanged("RecentCharacters");
             SettingsVm.OnSettingsLoaded();
-
-            CheckForUpdates();
-            CheckForThemes();
         }
 
         public void LoginFailedEvent(string error)
@@ -348,97 +342,6 @@ namespace slimCat.ViewModels
         protected override void SendMessage()
         {
             UpdateError("Cannot send messages to the home tab!");
-        }
-
-        private async void CheckForUpdates()
-        {
-            var latest = await updateService.GetLatestAsync();
-            if (latest == null) return;
-
-            await Dispatcher.BeginInvoke((Action) delegate
-            {
-                HasNewUpdate = latest.IsNewUpdate;
-                UpdateName = latest.ClientName;
-                UpdateLink = latest.DownloadLink;
-                UpdateBuildTime = latest.PublishDate;
-                ChangeLog = latest.ChangelogLink;
-
-                OnPropertyChanged("HasNewUpdate");
-                OnPropertyChanged("UpdateName");
-                OnPropertyChanged("UpdateLink");
-                OnPropertyChanged("UpdateBuildTime");
-                OnPropertyChanged("ChangeLog");
-            });
-
-            if (!latest.IsNewUpdate) return;
-
-            var updated = await updateService.TryUpdateAsync();
-            var message = "Automatic update successful, restart to finish applying updates.";
-
-            if (!updated) message = "Automatic update failed, please install update manually.";
-
-            Events.NewError(message);
-        }
-
-        private void CheckForThemes()
-        {
-            try
-            {
-                var currentThemeParser =
-                    new TextFieldParser(new FileStream("Theme\\theme.csv", FileMode.Open, FileAccess.Read,
-                        FileShare.Read));
-
-                currentThemeParser.SetDelimiters(",");
-
-                // go through header
-                currentThemeParser.ReadLine();
-
-                CurrentTheme = GetThemeModel(currentThemeParser.ReadFields());
-                OnPropertyChanged("CurrentTheme");
-
-                currentThemeParser.Close();
-
-                HasCurrentTheme = true;
-                OnPropertyChanged("HasCurrentTheme");
-            }
-            catch
-            {
-                HasCurrentTheme = false;
-                OnPropertyChanged("HasCurrentTheme");
-            }
-
-            try
-            {
-                var resp = browser.GetResponse(Constants.ThemeIndexUrl);
-                if (resp == null) return;
-
-                var parser = new TextFieldParser(new StringReader(resp))
-                {
-                    TextFieldType = FieldType.Delimited
-                };
-
-                parser.SetDelimiters(",");
-
-                // go through header
-                parser.ReadLine();
-
-                Dispatcher.BeginInvoke((Action) (() => Themes.Clear()));
-                while (!parser.EndOfData)
-                {
-                    var row = parser.ReadFields();
-                    var model = GetThemeModel(row);
-
-                    if (HasCurrentTheme && model.Name == CurrentTheme.Name && model.Version == CurrentTheme.Version)
-                        continue;
-
-                    Dispatcher.BeginInvoke((Action) (() => Themes.Add(model)));
-                }
-
-                parser.Close();
-            }
-            catch (WebException)
-            {
-            }
         }
 
         private static Color GetColor(string hex)

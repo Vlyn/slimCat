@@ -349,7 +349,7 @@ namespace slimCat.ViewModels
         protected void CopyLinkToClipboard(object linkToCopy)
         {
             if (!string.IsNullOrWhiteSpace(linkToCopy.ToString()))
-                Clipboard.SetText(linkToCopy.ToString());
+                Clipboard.SetDataObject(linkToCopy.ToString());
         }
 
         private void UpdateRightClickMenu(NotificationModel argument)

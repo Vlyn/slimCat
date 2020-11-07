@@ -25,6 +25,7 @@ namespace slimCat.Services
     using System.IO;
     using System.Linq;
     using System.Reflection;
+    using System.Threading;
     using System.Web;
     using Microsoft.Practices.Prism.Events;
     using Models;
@@ -229,6 +230,19 @@ namespace slimCat.Services
             return $"{year}-{month}-{day}.txt";
         }
 
+        private StreamWriter OpenLogFile(string path, bool append)
+        {
+            try
+            {
+                var writer = new StreamWriter(path, true);
+                return writer;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
         private StreamWriter AccessLog(string title, string id)
         {
             var loggingPath = StringExtensions.MakeSafeFolderPath(CurrentCharacter, title, id);
@@ -238,7 +252,26 @@ namespace slimCat.Services
             if (!Directory.Exists(loggingPath))
                 Directory.CreateDirectory(loggingPath);
 
-            return new StreamWriter(Path.Combine(loggingPath, fileName), true);
+            string path = Path.Combine(loggingPath, fileName);
+            StreamWriter writer = null;
+
+            int tries = 0;
+
+            do
+            {
+                writer = OpenLogFile(path, true);
+                ++tries;
+
+                if (writer == null)
+                {
+                    if (tries > 10)
+                        throw new Exception($"Couldn't open {path}");
+                    else
+                        Thread.Sleep(100);
+                }
+            } while (writer == null);
+
+            return writer;
         }
 
         #endregion

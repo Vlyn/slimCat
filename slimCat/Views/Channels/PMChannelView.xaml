@@ -217,7 +217,7 @@
                                   X2="1"
                                   Margin="0,0,0,0" />
 
-                            <StackPanel
+                            <VirtualizingStackPanel
                                 Visibility="{Binding Model.ProfileData, Converter={StaticResource NotNullConverter}}">
                                 <ScrollViewer VerticalScrollBarVisibility="Hidden"
                                               HorizontalScrollBarVisibility="Auto"
@@ -231,7 +231,7 @@
                                              SelectionChanged="OnSelected" />
                                 </ScrollViewer>
 
-                            </StackPanel>
+                            </VirtualizingStackPanel>
                         </StackPanel>
                     </Expander>
                 </Grid>

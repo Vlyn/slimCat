@@ -46,8 +46,6 @@ namespace slimCat.Services
 
         private const string GlobalFolderName = "Global";
 
-        private const string DefaultsFolderName = "!Defaults";
-
         private const string ProfileCacheFolderName = "!Profiles";
 
         private const string SearchTermsFileName = "!search.xml";
@@ -296,17 +294,6 @@ namespace slimCat.Services
 
             using (var fs = File.OpenWrite(fileName))
                 root.Save(fs);
-
-            if (!ApplicationSettings.TemplateCharacter.Equals(currentCharacter)) return;
-
-            var workingPath = StringExtensions.MakeSafeFolderPath(DefaultsFolderName, GlobalFolderName,
-                GlobalFolderName);
-            if (!Directory.Exists(workingPath))
-                Directory.CreateDirectory(workingPath);
-
-            workingPath = Path.Combine(workingPath, SettingsFileName);
-
-            File.Copy(fileName, workingPath, true);
         }
 
         public static UserPreferences Preferences
@@ -375,17 +362,6 @@ namespace slimCat.Services
             workingPath = Path.Combine(workingPath, SettingsFileName);
 
             SerializeObjectToXml(newSettingsModel, workingPath);
-
-            if (!ApplicationSettings.TemplateCharacter.Equals(currentCharacter))
-                return;
-
-            workingPath = StringExtensions.MakeSafeFolderPath(DefaultsFolderName, title, id);
-
-            if (!Directory.Exists(workingPath))
-                Directory.CreateDirectory(workingPath);
-
-            workingPath = Path.Combine(workingPath, SettingsFileName);
-            SerializeObjectToXml(newSettingsModel, workingPath);
         }
 
         #endregion
@@ -404,61 +380,8 @@ namespace slimCat.Services
             if (File.Exists(workingPath))
                 return;
 
-            if (CopyDefaultGlobalSettingsIfExist(currentCharacter))
-                return;
-
             Log("Global settings could not be restored; regenerating");
             SaveApplicationSettingsToXml(currentCharacter);
-        }
-
-        private static ChannelSettingsModel GetDefaultSettings(string title, string id, bool isPm)
-        {
-            var path = StringExtensions.MakeSafeFolderPath(DefaultsFolderName, title, id);
-            var baseObj = new ChannelSettingsModel(isPm);
-
-            if (!Directory.Exists(path))
-                return baseObj;
-
-            var workingPath = Path.Combine(path, SettingsFileName);
-
-            if (!File.Exists(workingPath))
-                return baseObj;
-
-            return ReadObjectFromXml(workingPath, new ChannelSettingsModel(isPm));
-        }
-
-        private static bool CopyDefaultGlobalSettingsIfExist(string currentCharacter)
-        {
-            var destPath =
-                Path.Combine(StringExtensions.MakeSafeFolderPath(currentCharacter, GlobalFolderName, GlobalFolderName),
-                    SettingsFileName);
-
-
-            var backup = Path.Combine(
-                StringExtensions.MakeSafeFolderPath(currentCharacter, GlobalFolderName, GlobalFolderName),
-                (SettingsFileName + ".old"));
-
-            if (File.Exists(backup))
-            {
-                Log("Restoring global settings from backup");
-                File.Copy(backup, destPath);
-                return true;
-            }
-
-            var path = StringExtensions.MakeSafeFolderPath(DefaultsFolderName, GlobalFolderName, GlobalFolderName);
-
-            if (!Directory.Exists(path))
-                return false;
-
-            var sourcePath = Path.Combine(path, SettingsFileName);
-
-            if (!File.Exists(sourcePath))
-                return false;
-
-            Log("Restoring global settings from default settings");
-            File.Copy(sourcePath, destPath);
-
-            return true;
         }
 
         [Conditional("DEBUG")]

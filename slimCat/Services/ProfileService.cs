@@ -177,7 +177,7 @@ namespace slimCat.Services
             {
                 ProfileData cache;
                 profileCache.TryGetValue(characterName, out cache);
-                cache = cache ?? SettingsService.RetrieveProfile(characterName);
+
                 if (cache != null)
                 {
                     if (!profileCache.ContainsKey(characterName))
@@ -316,7 +316,6 @@ namespace slimCat.Services
                 }
 
                 var profileData = CreateModel(profileBody, profileTags, images, allKinks, allAlts);
-                SettingsService.SaveProfile(characterName, profileData);
 
                 profileCache[characterName] = profileData;
 

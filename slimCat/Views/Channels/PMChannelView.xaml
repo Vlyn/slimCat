@@ -170,9 +170,9 @@
                                                 Foreground="{StaticResource ForegroundBrush}" />
                             </TextBlock>
                         </Expander.Header>
-                        <StackPanel MinHeight="55">
+                        <VirtualizingStackPanel MinHeight="55">
 
-                            <StackPanel Visibility="{Binding Converter={StaticResource NotNullConverter}}"
+                            <VirtualizingStackPanel Visibility="{Binding Converter={StaticResource NotNullConverter}}"
                                         DataContext="{Binding Path=Model.ProfileData}"
                                         Margin="0,0,95,0"
                                         TextBlock.Foreground="{StaticResource ForegroundBrush}"
@@ -202,7 +202,7 @@
                                     <Run Text="/" />
                                     <Run Text="{Binding Position}" />
                                 </TextBlock>
-                            </StackPanel>
+                            </VirtualizingStackPanel>
 
                             <TextBlock
                                 Visibility="{Binding Path=Model.ProfileData, Converter={StaticResource NullConverter}}"
@@ -227,12 +227,12 @@
                                     <ListBox ItemsSource="{Binding Model.ProfileData.Images}"
                                              ItemTemplate="{StaticResource ThumbnailTemplate}"
                                              Style="{StaticResource HorizontalListBoxStyle}"
-                                             SelectedItem="{Binding CurrentImage, Mode=TwoWay}"
+                                             SelectedItem="{Binding CurrentImage, Mode=TwoWay, IsAsync=True}"
                                              SelectionChanged="OnSelected" />
                                 </ScrollViewer>
 
                             </VirtualizingStackPanel>
-                        </StackPanel>
+                        </VirtualizingStackPanel>
                     </Expander>
                 </Grid>
             </Grid>

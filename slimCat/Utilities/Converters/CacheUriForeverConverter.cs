@@ -39,6 +39,7 @@ namespace slimCat.Utilities
             bi.CacheOption = BitmapCacheOption.OnDemand;
             bi.UriCachePolicy = new RequestCachePolicy(RequestCacheLevel.CacheIfAvailable);
             bi.CreateOptions = BitmapCreateOptions.IgnoreColorProfile;
+            bi.DecodePixelWidth = 600;
 
             bi.EndInit();
 

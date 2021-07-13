@@ -27,6 +27,8 @@ namespace slimCat
     using System.Linq;
     using System.Reflection;
     using System.Windows;
+    using System.Windows.Interop;
+    using System.Windows.Media;
     using Services;
     using Utilities;
 
@@ -101,6 +103,9 @@ namespace slimCat
 
         protected override void OnStartup(StartupEventArgs e)
         {
+            // Disable hardware acceleration
+            RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
+
             var assembly = Assembly.GetExecutingAssembly();
             var cwd = AppDomain.CurrentDomain.GetData("path") as string ?? Path.GetDirectoryName(assembly.Location);
 
